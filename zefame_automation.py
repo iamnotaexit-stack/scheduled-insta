@@ -75,13 +75,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from config import (
-    REEL_LINKS,
-    PROFILE_LINK,
-    VIEWS_INTERVAL,
-    LIKES_INTERVAL,
-    FOLLOWERS_INTERVAL,
-)
+import importlib
+import config
 
 DRIVER_PATH = os.path.join(os.environ.get('APPDATA', ''), 'undetected_chromedriver', 'undetected_chromedriver.exe')
 
@@ -209,13 +204,17 @@ async def submit_link(url, link):
 
 async def views_task():
     url = "https://zefame.com/en/free-instagram-views"
-    interval = VIEWS_INTERVAL
+    interval = config.VIEWS_INTERVAL
     log(f"Views task active: every {interval // 60} minutes.")
     while True:
-        link = random.choice(REEL_LINKS)
+        try:
+            importlib.reload(config)
+        except Exception:
+            pass
+        link = config.get_random_reel()
         success, wait_time, msg = await submit_link(url, link)
         if success:
-            sleep_sec = interval
+            sleep_sec = config.VIEWS_INTERVAL
             log(f"Views order placed. Next attempt in {sleep_sec // 60} minutes.")
         elif wait_time:
             sleep_sec = wait_time
@@ -227,14 +226,18 @@ async def views_task():
 
 async def likes_task():
     url = "https://zefame.com/en/free-instagram-likes"
-    interval = LIKES_INTERVAL
+    interval = config.LIKES_INTERVAL
     log(f"Likes task active: every {interval // 60} minutes.")
     await asyncio.sleep(5)
     while True:
-        link = random.choice(REEL_LINKS)
+        try:
+            importlib.reload(config)
+        except Exception:
+            pass
+        link = config.get_random_reel()
         success, wait_time, msg = await submit_link(url, link)
         if success:
-            sleep_sec = interval
+            sleep_sec = config.LIKES_INTERVAL
             log(f"Likes order placed. Next attempt in {sleep_sec // 60} minutes.")
         elif wait_time:
             sleep_sec = wait_time
@@ -246,15 +249,19 @@ async def likes_task():
 
 async def followers_task():
     url = "https://zefame.com/en/free-instagram-followers"
-    interval = FOLLOWERS_INTERVAL
+    interval = config.FOLLOWERS_INTERVAL
     h = interval // 3600
     m = (interval % 3600) // 60
     log(f"Followers task active: every {h} hours {m} minutes.")
     await asyncio.sleep(10)
     while True:
-        success, wait_time, msg = await submit_link(url, PROFILE_LINK)
+        try:
+            importlib.reload(config)
+        except Exception:
+            pass
+        success, wait_time, msg = await submit_link(url, config.PROFILE_LINK)
         if success:
-            sleep_sec = interval
+            sleep_sec = config.FOLLOWERS_INTERVAL
             log(f"Followers order placed. Next attempt in {h} hours {m} minutes.")
         elif wait_time:
             sleep_sec = wait_time
@@ -271,9 +278,9 @@ async def main():
     enforce_single_instance()
     log("==================================================")
     log("Zefame Multi-Service Automation Started")
-    log(f"Views: every {VIEWS_INTERVAL // 60} minutes")
-    log(f"Likes: every {LIKES_INTERVAL // 60} minutes")
-    log(f"Followers: every {FOLLOWERS_INTERVAL // 3600} hours {(FOLLOWERS_INTERVAL % 3600) // 60} minutes")
+    log(f"Views: every {config.VIEWS_INTERVAL // 60} minutes")
+    log(f"Likes: every {config.LIKES_INTERVAL // 60} minutes")
+    log(f"Followers: every {config.FOLLOWERS_INTERVAL // 3600} hours {(config.FOLLOWERS_INTERVAL % 3600) // 60} minutes")
     log("==================================================")
     await asyncio.gather(
         views_task(),

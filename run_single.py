@@ -17,7 +17,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from config import REEL_LINKS, PROFILE_LINK
+from config import REEL_LINKS, PROFILE_LINK, get_random_reel
 
 class SafeChrome(uc.Chrome):
     def __del__(self):
@@ -143,8 +143,8 @@ if __name__ == "__main__":
 
     task_type = sys.argv[1] if len(sys.argv) > 1 else "views"
     if task_type == "views":
-        submit_link("https://zefame.com/en/free-instagram-views", random.choice(REEL_LINKS))
+        submit_link("https://zefame.com/en/free-instagram-views", get_random_reel())
     elif task_type == "likes":
-        submit_link("https://zefame.com/en/free-instagram-likes", random.choice(REEL_LINKS))
+        submit_link("https://zefame.com/en/free-instagram-likes", get_random_reel())
     elif task_type == "followers":
         submit_link("https://zefame.com/en/free-instagram-followers", PROFILE_LINK)
