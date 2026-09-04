@@ -2,7 +2,7 @@ name: Zefame Automated Submissions
 
 on:
   schedule:
-    - cron: '*/8 * * * *'
+    - cron: '*/7 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -17,10 +17,15 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install Chrome and Virtual Display
         run: |
-          pip install playwright
-          playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable xvfb
 
-      - name: Run Views Task
-        run: python run_single.py views
+      - name: Install Dependencies
+        run: |
+          pip install undetected-chromedriver selenium
+
+      - name: Run Views Task with Virtual Display
+        run: |
+          xvfb-run --auto-servernum python run_single.py views
