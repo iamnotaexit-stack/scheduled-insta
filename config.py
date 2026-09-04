@@ -1,10 +1,19 @@
 # Configuration for Instagram links
 # Clean reel URLs without tracking parameters to prevent Zefame "Order error"
 
+REEL_WEIGHTS = {
+    "https://www.instagram.com/reel/Dc0U9eCRyq4/": 1,
+    "https://www.instagram.com/reel/Dc0Qg8WxenI/": 1,
+    "https://www.instagram.com/reel/Dc3IwtNRZoi/": 2,
+}
+
 REEL_LINKS = [
-    "https://www.instagram.com/reel/Dc0U9eCRyq4/",
-    "https://www.instagram.com/reel/Dc0Qg8WxenI/"
+    link for link, weight in REEL_WEIGHTS.items() for _ in range(weight)
 ]
+
+def get_random_reel():
+    import random
+    return random.choice(REEL_LINKS)
 
 PROFILE_LINK = "https://www.instagram.com/fluxiolive/"
 
