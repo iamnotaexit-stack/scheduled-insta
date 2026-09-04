@@ -3,8 +3,7 @@
 
 REEL_LINKS = [
     "https://www.instagram.com/reel/Dc0U9eCRyq4/",
-    "https://www.instagram.com/reel/Dc0Qg8WxenI/",
-    "https://www.instagram.com/reel/Dc3EfT-Rl_h/"
+    "https://www.instagram.com/reel/Dc0Qg8WxenI/"
 ]
 
 PROFILE_LINK = "https://www.instagram.com/fluxiolive/"
