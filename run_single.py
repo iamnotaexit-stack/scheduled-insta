@@ -14,16 +14,29 @@ async def submit_link(url, link):
         page = await browser.new_page()
         try:
             await page.goto(url, wait_until="networkidle", timeout=30000)
+            
             input_field = page.locator("#instagram-link")
             await input_field.wait_for(timeout=10000)
             await input_field.fill(link)
             
             submit_btn = page.locator("#submit-btn")
             await submit_btn.click()
-            print(f"[{timestamp}] Submitted link successfully to {url}")
-            await page.wait_for_timeout(5000)
+            
+            print(f"[{timestamp}] Clicked submit button. Waiting 80 seconds for countdown to finish...")
+            await page.wait_for_timeout(80000)
+            
+            success_visible = await page.locator("#success-page").is_visible()
+            error_visible = await page.locator("#error-page").is_visible()
+            
+            if success_visible:
+                print(f"[{timestamp}] SUCCESS: Submission verified and completed for {url}")
+            elif error_visible:
+                err_text = await page.locator("#error-message").inner_text()
+                print(f"[{timestamp}] ERROR response from Zefame: {err_text}")
+            else:
+                print(f"[{timestamp}] Finished 80-second wait cycle on {url}")
         except Exception as e:
-            print(f"[{timestamp}] Error submitting to {url}: {e}")
+            print(f"[{timestamp}] Exception during submission to {url}: {e}")
         finally:
             await browser.close()
 
