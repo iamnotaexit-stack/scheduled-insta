@@ -2,12 +2,17 @@ name: Zefame Automated Submissions
 
 on:
   schedule:
-    - cron: '*/7 * * * *'
+    - cron: '0 */5 * * *'
   workflow_dispatch:
 
+concurrency:
+  group: zefame-cloud-runner
+  cancel-in-progress: true
+
 jobs:
-  run-views:
+  run-automation:
     runs-on: ubuntu-latest
+    timeout-minutes: 350
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,8 +29,12 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install undetected-chromedriver selenium
+          pip install undetected-chromedriver selenium requests
 
-      - name: Run Views Task with Virtual Display
+      - name: Run Multi-Service Automation
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          MAX_RUNTIME_SECONDS: 18000
         run: |
-          xvfb-run --auto-servernum python run_single.py views
+          xvfb-run --auto-servernum python -u zefame_automation.py
