@@ -18,6 +18,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from config import REEL_LINKS, PROFILE_LINK, get_random_reel
+import state
 
 class SafeChrome(uc.Chrome):
     def __del__(self):
@@ -143,8 +144,20 @@ if __name__ == "__main__":
 
     task_type = sys.argv[1] if len(sys.argv) > 1 else "views"
     if task_type == "views":
-        submit_link("https://zefame.com/en/free-instagram-views", get_random_reel())
+        reel, mode, rem, tgt = state.get_eligible_reel_for_views()
+        if reel:
+            success, _, _ = submit_link("https://zefame.com/en/free-instagram-views", reel)
+            if success:
+                state.record_view_success(reel)
+        else:
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Views skipped: {mode}", flush=True)
     elif task_type == "likes":
-        submit_link("https://zefame.com/en/free-instagram-likes", get_random_reel())
+        reel, rem, tgt = state.get_eligible_reel_for_likes()
+        if reel:
+            success, _, _ = submit_link("https://zefame.com/en/free-instagram-likes", reel)
+            if success:
+                state.record_like_success(reel)
+        else:
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Likes skipped: All reels completed likes.", flush=True)
     elif task_type == "followers":
         submit_link("https://zefame.com/en/free-instagram-followers", PROFILE_LINK)
