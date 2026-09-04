@@ -274,6 +274,38 @@ async def followers_task():
             log(f"Followers encountered an issue ({msg}). Retrying in {sleep_sec} seconds.")
         await asyncio.sleep(sleep_sec)
 
+MAX_RUNTIME_SECONDS = int(os.environ.get("MAX_RUNTIME_SECONDS", "0"))
+
+def trigger_next_workflow():
+    token = os.environ.get("GH_PAT")
+    repo = os.environ.get("GITHUB_REPOSITORY", "iamnotaexit-stack/scheduled-insta")
+    if not token:
+        log("No GH_PAT found. Relying on scheduled cron heartbeat.")
+        return
+    try:
+        import requests
+        url = f"https://api.github.com/repos/{repo}/actions/workflows/zefame.yml/dispatches"
+        headers = {
+            "Authorization": f"token {token}",
+            "Accept": "application/vnd.github.v3+json",
+        }
+        res = requests.post(url, headers=headers, json={"ref": "main"}, timeout=15)
+        if res.status_code in (200, 204):
+            log("Successfully dispatched next GitHub Actions runner.")
+        else:
+            log(f"Workflow dispatch status {res.status_code}: {res.text}")
+    except Exception as e:
+        log(f"Workflow dispatch error: {e}")
+
+async def watchdog_task():
+    if MAX_RUNTIME_SECONDS <= 0:
+        return
+    log(f"Cloud runner watchdog active: running for {MAX_RUNTIME_SECONDS // 60} minutes.")
+    await asyncio.sleep(MAX_RUNTIME_SECONDS)
+    log("Max runtime reached for this cloud runner. Dispatching next workflow run...")
+    trigger_next_workflow()
+    os._exit(0)
+
 async def main():
     enforce_single_instance()
     log("==================================================")
@@ -285,7 +317,8 @@ async def main():
     await asyncio.gather(
         views_task(),
         likes_task(),
-        followers_task()
+        followers_task(),
+        watchdog_task()
     )
 
 if __name__ == "__main__":
