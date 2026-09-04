@@ -6,9 +6,16 @@ from playwright.async_api import async_playwright
 
 from config import REEL_LINKS, PROFILE_LINK
 
+def clean_url(url_string):
+    clean = url_string.split('?')[0]
+    if not clean.endswith('/'):
+        clean += '/'
+    return clean
+
 async def submit_link(url, link):
+    target_link = clean_url(link)
     timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-    print(f"[{timestamp}] Navigating to {url} with link: {link}")
+    print(f"[{timestamp}] Navigating to {url} with link: {target_link}")
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
@@ -17,7 +24,7 @@ async def submit_link(url, link):
             
             input_field = page.locator("#instagram-link")
             await input_field.wait_for(timeout=10000)
-            await input_field.fill(link)
+            await input_field.fill(target_link)
             
             submit_btn = page.locator("#submit-btn")
             await submit_btn.click()

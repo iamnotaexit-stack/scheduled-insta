@@ -1,9 +1,9 @@
 # Configuration for Instagram links
-# You can add more reel links to REEL_LINKS array anytime.
+# Clean reel URLs without tracking parameters to prevent Zefame "Order error"
 
 REEL_LINKS = [
-    "https://www.instagram.com/reel/Dc0U9eCRyq4/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
-    "https://www.instagram.com/reel/Dc0Qg8WxenI/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+    "https://www.instagram.com/reel/Dc0U9eCRyq4/",
+    "https://www.instagram.com/reel/Dc0Qg8WxenI/"
 ]
 
-PROFILE_LINK = "https://www.instagram.com/fluxiolive"
+PROFILE_LINK = "https://www.instagram.com/fluxiolive/"
