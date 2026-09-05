@@ -25,8 +25,8 @@ LIKES_INTERVAL = 35 * 60                 # 35 minutes
 FOLLOWERS_INTERVAL = 24 * 3600 + 3 * 60  # 24 hours 3 minutes
 
 # Loop Limits per reel
-VIEW_CAP_RANGE = (150, 200)
-LIKE_CAP_RANGE = (100, 150)
+VIEW_CAP_RANGE = (400, 450)
+LIKE_CAP_RANGE = (400, 450)
 
 # Daily Hinder Mode settings (activated after all reels finish views and likes)
 HINDER_DAILY_VIEWS_RANGE = (10, 20)

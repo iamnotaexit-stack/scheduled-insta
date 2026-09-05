@@ -215,7 +215,7 @@ async def views_task():
         reel, mode, remaining, target = state.get_eligible_reel_for_views()
 
         if mode == "VIEWS_CAP_REACHED_WAITING_LIKES":
-            log("Views: All reels reached view targets (150-200). Pausing views until like targets complete.")
+            log(f"Views: All reels reached view targets ({config.VIEW_CAP_RANGE[0]}-{config.VIEW_CAP_RANGE[1]}). Pausing views until like targets complete.")
             await asyncio.sleep(600)
             continue
 
@@ -265,7 +265,7 @@ async def likes_task():
 
         reel, remaining, target = state.get_eligible_reel_for_likes()
         if not reel:
-            log("Likes: All reels have completed like targets (100-150). Likes loop completed.")
+            log(f"Likes: All reels have completed like targets ({config.LIKE_CAP_RANGE[0]}-{config.LIKE_CAP_RANGE[1]}). Likes loop completed.")
             await asyncio.sleep(3600)
             continue
 
@@ -346,8 +346,8 @@ async def main():
     enforce_single_instance()
     log("==================================================")
     log("Zefame Multi-Service Automation Started")
-    log(f"Views: every {config.VIEWS_INTERVAL // 60} minutes (cap: 150-200 per reel)")
-    log(f"Likes: every {config.LIKES_INTERVAL // 60} minutes (cap: 100-150 per reel)")
+    log(f"Views: every {config.VIEWS_INTERVAL // 60} minutes (cap: {config.VIEW_CAP_RANGE[0]}-{config.VIEW_CAP_RANGE[1]} per reel)")
+    log(f"Likes: every {config.LIKES_INTERVAL // 60} minutes (cap: {config.LIKE_CAP_RANGE[0]}-{config.LIKE_CAP_RANGE[1]} per reel)")
     log(f"Followers: every {config.FOLLOWERS_INTERVAL // 3600} hours {(config.FOLLOWERS_INTERVAL % 3600) // 60} minutes")
     log("--------------------------------------------------")
     for line in state.get_status_summary().splitlines():
