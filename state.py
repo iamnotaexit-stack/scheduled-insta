@@ -94,14 +94,13 @@ def _async_git_sync():
 
 def _git_sync_worker():
     try:
-        token = os.environ.get("GH_PAT")
-        repo = os.environ.get("GITHUB_REPOSITORY", "iamnotaexit-stack/scheduled-insta")
-        remote_url = f"https://{token}@github.com/{repo}.git"
         subprocess.run(["git", "config", "user.name", "github-actions[bot]"], cwd=SCRIPT_DIR, capture_output=True)
         subprocess.run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"], cwd=SCRIPT_DIR, capture_output=True)
         subprocess.run(["git", "add", "state.json"], cwd=SCRIPT_DIR, capture_output=True)
-        subprocess.run(["git", "commit", "-m", "Update automation state [skip ci]"], cwd=SCRIPT_DIR, capture_output=True)
-        subprocess.run(["git", "push", remote_url, "HEAD:main"], cwd=SCRIPT_DIR, capture_output=True)
+        res = subprocess.run(["git", "commit", "-m", "Update automation state [skip ci]"], cwd=SCRIPT_DIR, capture_output=True)
+        if res.returncode == 0:
+            subprocess.run(["git", "pull", "--rebase"], cwd=SCRIPT_DIR, capture_output=True)
+            subprocess.run(["git", "push", "origin", "HEAD:main"], cwd=SCRIPT_DIR, capture_output=True)
     except Exception:
         pass
 
