@@ -135,9 +135,10 @@ def get_eligible_reel_for_views():
     ]
 
     if eligible:
-        reel = random.choice(eligible)
+        weighted = [r for r in eligible for _ in range(config.REEL_WEIGHTS.get(r, 1))]
+        reel = random.choice(weighted)
         cur = data["counts"]["views"].get(reel, 0)
-        target = data["targets"]["views"].get(reel, 150)
+        target = data["targets"]["views"].get(reel, config.VIEW_CAP_RANGE[0])
         remaining = target - cur
         return reel, "NORMAL_RUN", remaining, target
 
@@ -196,9 +197,10 @@ def get_eligible_reel_for_likes():
     ]
 
     if eligible:
-        reel = random.choice(eligible)
+        weighted = [r for r in eligible for _ in range(config.REEL_WEIGHTS.get(r, 1))]
+        reel = random.choice(weighted)
         cur = data["counts"]["likes"].get(reel, 0)
-        target = data["targets"]["likes"].get(reel, 100)
+        target = data["targets"]["likes"].get(reel, config.LIKE_CAP_RANGE[0])
         remaining = target - cur
         return reel, remaining, target
 

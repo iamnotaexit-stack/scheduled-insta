@@ -9,6 +9,7 @@ REEL_WEIGHTS = {
     "https://www.instagram.com/reel/Dc3qDNWRNAd/": 1,
     "https://www.instagram.com/reel/DdO0u3rxSRe/": 1,
     "https://www.instagram.com/reel/DdYW5JORpdu/": 1,
+    "https://www.instagram.com/reel/Dd3gahSxIqd/": 3,
 }
 
 REEL_LINKS = [
