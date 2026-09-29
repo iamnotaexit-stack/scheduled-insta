@@ -11,12 +11,14 @@ REEL_WEIGHTS = {
     "https://www.instagram.com/reel/DdYW5JORpdu/": 1,
     "https://www.instagram.com/reel/Dd3gahSxIqd/": 1,
     "https://www.instagram.com/reel/Dd3iPYnxGU-/": 1,
+    "https://www.instagram.com/reel/Dd3jWlFxfzY/": 1,
 }
 
 # 72-hour priority focus window settings
 FOCUS_REELS = [
     "https://www.instagram.com/reel/Dd3gahSxIqd/",
-    "https://www.instagram.com/reel/Dd3iPYnxGU-/"
+    "https://www.instagram.com/reel/Dd3iPYnxGU-/",
+    "https://www.instagram.com/reel/Dd3jWlFxfzY/"
 ]
 FOCUS_EXPIRY_TIMESTAMP = 1790936830  # Active until 2026-10-02 15:57:10 IST
 
