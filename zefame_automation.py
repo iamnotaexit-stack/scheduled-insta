@@ -128,13 +128,15 @@ def submit_link_sync(url, link):
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1280,900")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-setuid-sandbox")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-background-timer-throttling")
     options.add_argument("--disable-backgrounding-occluded-windows")
     options.add_argument("--disable-renderer-backgrounding")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36")
 
-    driver_kwargs = {"options": options}
+    driver_kwargs = {"options": options, "use_subprocess": True}
     if os.path.exists(DRIVER_PATH):
         driver_kwargs["driver_executable_path"] = DRIVER_PATH
 

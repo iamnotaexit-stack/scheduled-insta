@@ -100,9 +100,13 @@ def _git_sync_worker():
         res = subprocess.run(["git", "commit", "-m", "Update automation state [skip ci]"], cwd=SCRIPT_DIR, capture_output=True)
         if res.returncode == 0:
             subprocess.run(["git", "pull", "--rebase"], cwd=SCRIPT_DIR, capture_output=True)
-            subprocess.run(["git", "push", "origin", "HEAD:main"], cwd=SCRIPT_DIR, capture_output=True)
-    except Exception:
-        pass
+            push_res = subprocess.run(["git", "push", "origin", "HEAD:main"], cwd=SCRIPT_DIR, capture_output=True, text=True)
+            if push_res.returncode == 0:
+                print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] [Git Sync] Successfully pushed state.json to GitHub", flush=True)
+            else:
+                print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] [Git Sync] Push error: {push_res.stderr.strip()}", flush=True)
+    except Exception as e:
+        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] [Git Sync] Exception: {e}", flush=True)
 
 def get_eligible_reel_for_views():
     data = load_state()
