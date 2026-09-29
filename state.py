@@ -128,11 +128,19 @@ def get_eligible_reel_for_views():
         else:
             return None, "HINDER_DAILY_LIMIT_REACHED", 0, daily_target
 
-    # Normal mode: check per-reel caps (150-200)
+    # Normal mode: check per-reel caps (400-450)
     eligible = [
         r for r in reels
-        if data["counts"]["views"].get(r, 0) < data["targets"]["views"].get(r, 150)
+        if data["counts"]["views"].get(r, 0) < data["targets"]["views"].get(r, config.VIEW_CAP_RANGE[0])
     ]
+
+    # Check 72-hour focus window
+    focus_reels = getattr(config, "FOCUS_REELS", [])
+    focus_expiry = getattr(config, "FOCUS_EXPIRY_TIMESTAMP", 0)
+    if time.time() < focus_expiry and focus_reels:
+        focused = [r for r in eligible if r in focus_reels]
+        if focused:
+            eligible = focused
 
     if eligible:
         weighted = [r for r in eligible for _ in range(config.REEL_WEIGHTS.get(r, 1))]
@@ -193,8 +201,16 @@ def get_eligible_reel_for_likes():
 
     eligible = [
         r for r in reels
-        if data["counts"]["likes"].get(r, 0) < data["targets"]["likes"].get(r, 100)
+        if data["counts"]["likes"].get(r, 0) < data["targets"]["likes"].get(r, config.LIKE_CAP_RANGE[0])
     ]
+
+    # Check 72-hour focus window
+    focus_reels = getattr(config, "FOCUS_REELS", [])
+    focus_expiry = getattr(config, "FOCUS_EXPIRY_TIMESTAMP", 0)
+    if time.time() < focus_expiry and focus_reels:
+        focused = [r for r in eligible if r in focus_reels]
+        if focused:
+            eligible = focused
 
     if eligible:
         weighted = [r for r in eligible for _ in range(config.REEL_WEIGHTS.get(r, 1))]

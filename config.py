@@ -9,8 +9,16 @@ REEL_WEIGHTS = {
     "https://www.instagram.com/reel/Dc3qDNWRNAd/": 1,
     "https://www.instagram.com/reel/DdO0u3rxSRe/": 1,
     "https://www.instagram.com/reel/DdYW5JORpdu/": 1,
-    "https://www.instagram.com/reel/Dd3gahSxIqd/": 3,
+    "https://www.instagram.com/reel/Dd3gahSxIqd/": 1,
+    "https://www.instagram.com/reel/Dd3iPYnxGU-/": 1,
 }
+
+# 72-hour priority focus window settings
+FOCUS_REELS = [
+    "https://www.instagram.com/reel/Dd3gahSxIqd/",
+    "https://www.instagram.com/reel/Dd3iPYnxGU-/"
+]
+FOCUS_EXPIRY_TIMESTAMP = 1790936830  # Active until 2026-10-02 15:57:10 IST
 
 REEL_LINKS = [
     link for link, weight in REEL_WEIGHTS.items() for _ in range(weight)
