@@ -1,6 +1,7 @@
 import os
 import random
 import re
+import subprocess
 import sys
 import time
 
@@ -55,6 +56,30 @@ def parse_wait_time(msg):
 
     return total + 15 if found else None
 
+def get_chrome_major_version():
+    try:
+        for cmd in [["google-chrome", "--version"], ["google-chrome-stable", "--version"], ["chrome", "--version"]]:
+            try:
+                res = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+                m = re.search(r"(\d+)\.", res.stdout)
+                if m:
+                    return int(m.group(1))
+            except Exception:
+                pass
+        if sys.platform == "win32":
+            import winreg
+            for root in (winreg.HKEY_CURRENT_USER, winreg.HKEY_LOCAL_MACHINE):
+                for kp in (r"Software\Google\Chrome\BLBeacon", r"Software\Wow6432Node\Google\Chrome\BLBeacon"):
+                    try:
+                        with winreg.OpenKey(root, kp) as k:
+                            ver, _ = winreg.QueryValueEx(k, "version")
+                            return int(ver.split(".")[0])
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+    return None
+
 def submit_link(url, link):
     target_link = clean_url(link)
     print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Submitting to: {url}", flush=True)
@@ -76,6 +101,9 @@ def submit_link(url, link):
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36")
 
     driver_kwargs = {"options": options, "use_subprocess": True}
+    major_ver = get_chrome_major_version()
+    if major_ver:
+        driver_kwargs["version_main"] = major_ver
     if os.path.exists(DRIVER_PATH):
         driver_kwargs["driver_executable_path"] = DRIVER_PATH
 

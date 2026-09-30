@@ -2,12 +2,12 @@ name: Zefame Automated Submissions
 
 on:
   schedule:
-    - cron: '0 */5 * * *'
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 concurrency:
   group: zefame-cloud-runner
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   run-automation:
@@ -40,6 +40,23 @@ jobs:
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          MAX_RUNTIME_SECONDS: 18000
+          MAX_RUNTIME_SECONDS: 14400
         run: |
           xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24 -ac -nolisten tcp" python -u zefame_automation.py
+
+      - name: Auto-Relay Next Runner
+        if: always()
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          python -c "
+          import os, requests
+          token = os.environ.get('GH_PAT')
+          repo = os.environ.get('GITHUB_REPOSITORY')
+          if token and repo:
+              url = f'https://api.github.com/repos/{repo}/actions/workflows/zefame.yml/dispatches'
+              headers = {'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}
+              res = requests.post(url, headers=headers, json={'ref': 'main'})
+              print(f'Relay dispatch status: {res.status_code}')
+          "

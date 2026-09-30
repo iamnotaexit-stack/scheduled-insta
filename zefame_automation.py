@@ -4,6 +4,7 @@ import ctypes
 import os
 import random
 import re
+import subprocess
 import sys
 import time
 
@@ -116,6 +117,30 @@ def parse_wait_time(msg):
 
     return total + 15 if found else None
 
+def get_chrome_major_version():
+    try:
+        for cmd in [["google-chrome", "--version"], ["google-chrome-stable", "--version"], ["chrome", "--version"]]:
+            try:
+                res = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+                m = re.search(r"(\d+)\.", res.stdout)
+                if m:
+                    return int(m.group(1))
+            except Exception:
+                pass
+        if sys.platform == "win32":
+            import winreg
+            for root in (winreg.HKEY_CURRENT_USER, winreg.HKEY_LOCAL_MACHINE):
+                for kp in (r"Software\Google\Chrome\BLBeacon", r"Software\Wow6432Node\Google\Chrome\BLBeacon"):
+                    try:
+                        with winreg.OpenKey(root, kp) as k:
+                            ver, _ = winreg.QueryValueEx(k, "version")
+                            return int(ver.split(".")[0])
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+    return None
+
 def submit_link_sync(url, link):
     target_link = clean_url(link)
     log(f"Submitting to: {url}")
@@ -137,6 +162,9 @@ def submit_link_sync(url, link):
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36")
 
     driver_kwargs = {"options": options, "use_subprocess": True}
+    major_ver = get_chrome_major_version()
+    if major_ver:
+        driver_kwargs["version_main"] = major_ver
     if os.path.exists(DRIVER_PATH):
         driver_kwargs["driver_executable_path"] = DRIVER_PATH
 
@@ -159,11 +187,11 @@ def submit_link_sync(url, link):
         input_elem.clear()
         input_elem.send_keys(target_link)
 
-        submit_btn = driver.find_element(By.ID, "submit-btn")
+        submit_btn = wait.until(EC.element_to_be_clickable((By.ID, "submit-btn")))
         submit_btn.click()
         log("Form submitted. Awaiting timer and verification...")
 
-        for s in range(85):
+        for s in range(95):
             time.sleep(1)
             err_visible = False
             succ_visible = False
@@ -212,50 +240,54 @@ async def views_task():
     log(f"Views task active: every {config.VIEWS_INTERVAL // 60} minutes.")
     while True:
         try:
-            importlib.reload(config)
-        except Exception:
-            pass
+            try:
+                importlib.reload(config)
+            except Exception:
+                pass
 
-        reel, mode, remaining, target = state.get_eligible_reel_for_views()
+            reel, mode, remaining, target = state.get_eligible_reel_for_views()
 
-        if mode == "VIEWS_CAP_REACHED_WAITING_LIKES":
-            log(f"Views: All reels reached view targets ({config.VIEW_CAP_RANGE[0]}-{config.VIEW_CAP_RANGE[1]}). Pausing views until like targets complete.")
-            await asyncio.sleep(600)
-            continue
+            if mode == "VIEWS_CAP_REACHED_WAITING_LIKES":
+                log(f"Views: All reels reached view targets ({config.VIEW_CAP_RANGE[0]}-{config.VIEW_CAP_RANGE[1]}). Pausing views until like targets complete.")
+                await asyncio.sleep(600)
+                continue
 
-        if mode == "HINDER_DAILY_LIMIT_REACHED":
-            log(f"Views: Daily hinder limit ({target} views/day) completed for today. Sleeping 1 hour.")
-            await asyncio.sleep(3600)
-            continue
+            if mode == "HINDER_DAILY_LIMIT_REACHED":
+                log(f"Views: Daily hinder limit ({target} views/day) completed for today. Sleeping 1 hour.")
+                await asyncio.sleep(3600)
+                continue
 
-        if mode == "HINDER_ACTIVATED":
-            log(f"Hinder Mode Activated! All view and like caps finished. Daily target: {target} views.")
+            if mode == "HINDER_ACTIVATED":
+                log(f"Hinder Mode Activated! All view and like caps finished. Daily target: {target} views.")
 
-        if not reel:
-            await asyncio.sleep(300)
-            continue
+            if not reel:
+                await asyncio.sleep(300)
+                continue
 
-        if mode in ("HINDER_RUN", "HINDER_ACTIVATED"):
-            log(f"Views (Hinder Mode): Submitting {reel}. Remaining today: {remaining}/{target}")
-        else:
-            log(f"Views (Normal): Submitting {reel}. Remaining for this reel: {remaining}/{target}")
-
-        success, wait_time, msg = await submit_link(url, reel)
-        if success:
-            state.record_view_success(reel)
             if mode in ("HINDER_RUN", "HINDER_ACTIVATED"):
-                sleep_sec = max(1800, int(86400 / max(1, target)))
-                log(f"Views order placed in Hinder Mode. Next spaced run in {sleep_sec // 60} minutes.")
+                log(f"Views (Hinder Mode): Submitting {reel}. Remaining today: {remaining}/{target}")
             else:
-                sleep_sec = config.VIEWS_INTERVAL
-                log(f"Views order placed. Next attempt in {sleep_sec // 60} minutes.")
-        elif wait_time:
-            sleep_sec = wait_time
-            log(f"Views cooldown active. Retrying in {sleep_sec} seconds ({sleep_sec // 60}m {sleep_sec % 60}s).")
-        else:
-            sleep_sec = 120
-            log(f"Views encountered an issue ({msg}). Retrying in {sleep_sec} seconds.")
-        await asyncio.sleep(sleep_sec)
+                log(f"Views (Normal): Submitting {reel}. Remaining for this reel: {remaining}/{target}")
+
+            success, wait_time, msg = await submit_link(url, reel)
+            if success:
+                state.record_view_success(reel)
+                if mode in ("HINDER_RUN", "HINDER_ACTIVATED"):
+                    sleep_sec = max(1800, int(86400 / max(1, target)))
+                    log(f"Views order placed in Hinder Mode. Next spaced run in {sleep_sec // 60} minutes.")
+                else:
+                    sleep_sec = config.VIEWS_INTERVAL
+                    log(f"Views order placed. Next attempt in {sleep_sec // 60} minutes.")
+            elif wait_time:
+                sleep_sec = wait_time
+                log(f"Views cooldown active. Retrying in {sleep_sec} seconds ({sleep_sec // 60}m {sleep_sec % 60}s).")
+            else:
+                sleep_sec = 120
+                log(f"Views encountered an issue ({msg}). Retrying in {sleep_sec} seconds.")
+            await asyncio.sleep(sleep_sec)
+        except Exception as e:
+            log(f"Views task unexpected error: {e}. Retrying in 60 seconds.")
+            await asyncio.sleep(60)
 
 async def likes_task():
     url = "https://zefame.com/en/free-instagram-likes"
@@ -263,29 +295,33 @@ async def likes_task():
     await asyncio.sleep(5)
     while True:
         try:
-            importlib.reload(config)
-        except Exception:
-            pass
+            try:
+                importlib.reload(config)
+            except Exception:
+                pass
 
-        reel, remaining, target = state.get_eligible_reel_for_likes()
-        if not reel:
-            log(f"Likes: All reels have completed like targets ({config.LIKE_CAP_RANGE[0]}-{config.LIKE_CAP_RANGE[1]}). Likes loop completed.")
-            await asyncio.sleep(3600)
-            continue
+            reel, remaining, target = state.get_eligible_reel_for_likes()
+            if not reel:
+                log(f"Likes: All reels have completed like targets ({config.LIKE_CAP_RANGE[0]}-{config.LIKE_CAP_RANGE[1]}). Likes loop completed.")
+                await asyncio.sleep(3600)
+                continue
 
-        log(f"Likes: Submitting {reel}. Remaining for this reel: {remaining}/{target}")
-        success, wait_time, msg = await submit_link(url, reel)
-        if success:
-            state.record_like_success(reel)
-            sleep_sec = config.LIKES_INTERVAL
-            log(f"Likes order placed. Next attempt in {sleep_sec // 60} minutes.")
-        elif wait_time:
-            sleep_sec = wait_time
-            log(f"Likes cooldown active. Retrying in {sleep_sec} seconds ({sleep_sec // 60}m {sleep_sec % 60}s).")
-        else:
-            sleep_sec = 180
-            log(f"Likes encountered an issue ({msg}). Retrying in {sleep_sec} seconds.")
-        await asyncio.sleep(sleep_sec)
+            log(f"Likes: Submitting {reel}. Remaining for this reel: {remaining}/{target}")
+            success, wait_time, msg = await submit_link(url, reel)
+            if success:
+                state.record_like_success(reel)
+                sleep_sec = config.LIKES_INTERVAL
+                log(f"Likes order placed. Next attempt in {sleep_sec // 60} minutes.")
+            elif wait_time:
+                sleep_sec = wait_time
+                log(f"Likes cooldown active. Retrying in {sleep_sec} seconds ({sleep_sec // 60}m {sleep_sec % 60}s).")
+            else:
+                sleep_sec = 180
+                log(f"Likes encountered an issue ({msg}). Retrying in {sleep_sec} seconds.")
+            await asyncio.sleep(sleep_sec)
+        except Exception as e:
+            log(f"Likes task unexpected error: {e}. Retrying in 60 seconds.")
+            await asyncio.sleep(60)
 
 async def followers_task():
     url = "https://zefame.com/en/free-instagram-followers"
@@ -296,23 +332,27 @@ async def followers_task():
     await asyncio.sleep(10)
     while True:
         try:
-            importlib.reload(config)
-        except Exception:
-            pass
-        success, wait_time, msg = await submit_link(url, config.PROFILE_LINK)
-        if success:
-            sleep_sec = config.FOLLOWERS_INTERVAL
-            log(f"Followers order placed. Next attempt in {h} hours {m} minutes.")
-        elif wait_time:
-            sleep_sec = wait_time
-            qh = sleep_sec // 3600
-            qm = (sleep_sec % 3600) // 60
-            qs = sleep_sec % 60
-            log(f"Followers cooldown active. Retrying in {qh}h {qm}m {qs}s.")
-        else:
-            sleep_sec = 300
-            log(f"Followers encountered an issue ({msg}). Retrying in {sleep_sec} seconds.")
-        await asyncio.sleep(sleep_sec)
+            try:
+                importlib.reload(config)
+            except Exception:
+                pass
+            success, wait_time, msg = await submit_link(url, config.PROFILE_LINK)
+            if success:
+                sleep_sec = config.FOLLOWERS_INTERVAL
+                log(f"Followers order placed. Next attempt in {h} hours {m} minutes.")
+            elif wait_time:
+                sleep_sec = wait_time
+                qh = sleep_sec // 3600
+                qm = (sleep_sec % 3600) // 60
+                qs = sleep_sec % 60
+                log(f"Followers cooldown active. Retrying in {qh}h {qm}m {qs}s.")
+            else:
+                sleep_sec = 300
+                log(f"Followers encountered an issue ({msg}). Retrying in {sleep_sec} seconds.")
+            await asyncio.sleep(sleep_sec)
+        except Exception as e:
+            log(f"Followers task unexpected error: {e}. Retrying in 60 seconds.")
+            await asyncio.sleep(60)
 
 MAX_RUNTIME_SECONDS = int(os.environ.get("MAX_RUNTIME_SECONDS", "0"))
 

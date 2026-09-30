@@ -184,11 +184,11 @@ def record_view_success(reel):
         # Check if this completed all views and all likes
         reels = list(config.REEL_WEIGHTS.keys())
         views_done = all(
-            data["counts"]["views"].get(r, 0) >= data["targets"]["views"].get(r, 150)
+            data["counts"]["views"].get(r, 0) >= data["targets"]["views"].get(r, config.VIEW_CAP_RANGE[0])
             for r in reels
         )
         likes_done = all(
-            data["counts"]["likes"].get(r, 0) >= data["targets"]["likes"].get(r, 100)
+            data["counts"]["likes"].get(r, 0) >= data["targets"]["likes"].get(r, config.LIKE_CAP_RANGE[0])
             for r in reels
         )
         if views_done and likes_done:
@@ -233,11 +233,11 @@ def record_like_success(reel):
     # Check if this completed all likes and views
     reels = list(config.REEL_WEIGHTS.keys())
     views_done = all(
-        data["counts"]["views"].get(r, 0) >= data["targets"]["views"].get(r, 150)
+        data["counts"]["views"].get(r, 0) >= data["targets"]["views"].get(r, config.VIEW_CAP_RANGE[0])
         for r in reels
     )
     likes_done = all(
-        data["counts"]["likes"].get(r, 0) >= data["targets"]["likes"].get(r, 100)
+        data["counts"]["likes"].get(r, 0) >= data["targets"]["likes"].get(r, config.LIKE_CAP_RANGE[0])
         for r in reels
     )
 
