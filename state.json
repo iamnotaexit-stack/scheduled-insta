@@ -1,53 +1,53 @@
 {
   "targets": {
     "views": {
-      "https://www.instagram.com/reel/Dc0U9eCRyq4/": 436,
-      "https://www.instagram.com/reel/Dc0Qg8WxenI/": 437,
-      "https://www.instagram.com/reel/Dc3IwtNRZoi/": 433,
-      "https://www.instagram.com/reel/Dc3EfT-Rl_h/": 402,
-      "https://www.instagram.com/reel/Dc3qDNWRNAd/": 445,
-      "https://www.instagram.com/reel/DdO0u3rxSRe/": 431,
-      "https://www.instagram.com/reel/DdYW5JORpdu/": 439,
-      "https://www.instagram.com/reel/Dd3gahSxIqd/": 411,
-      "https://www.instagram.com/reel/Dd3iPYnxGU-/": 426,
-      "https://www.instagram.com/reel/Dd3jWlFxfzY/": 449
+      "https://www.instagram.com/reel/Dc0U9eCRyq4/": 400,
+      "https://www.instagram.com/reel/Dc0Qg8WxenI/": 447,
+      "https://www.instagram.com/reel/Dc3IwtNRZoi/": 416,
+      "https://www.instagram.com/reel/Dc3EfT-Rl_h/": 437,
+      "https://www.instagram.com/reel/Dc3qDNWRNAd/": 438,
+      "https://www.instagram.com/reel/DdO0u3rxSRe/": 412,
+      "https://www.instagram.com/reel/DdYW5JORpdu/": 445,
+      "https://www.instagram.com/reel/Dd3gahSxIqd/": 437,
+      "https://www.instagram.com/reel/Dd3iPYnxGU-/": 401,
+      "https://www.instagram.com/reel/Dd3jWlFxfzY/": 410
     },
     "likes": {
-      "https://www.instagram.com/reel/Dc0U9eCRyq4/": 634,
-      "https://www.instagram.com/reel/Dc0Qg8WxenI/": 648,
-      "https://www.instagram.com/reel/Dc3IwtNRZoi/": 606,
-      "https://www.instagram.com/reel/Dc3EfT-Rl_h/": 642,
-      "https://www.instagram.com/reel/Dc3qDNWRNAd/": 605,
-      "https://www.instagram.com/reel/DdO0u3rxSRe/": 611,
-      "https://www.instagram.com/reel/DdYW5JORpdu/": 650,
-      "https://www.instagram.com/reel/Dd3gahSxIqd/": 601,
-      "https://www.instagram.com/reel/Dd3iPYnxGU-/": 633,
-      "https://www.instagram.com/reel/Dd3jWlFxfzY/": 605
+      "https://www.instagram.com/reel/Dc0U9eCRyq4/": 630,
+      "https://www.instagram.com/reel/Dc0Qg8WxenI/": 624,
+      "https://www.instagram.com/reel/Dc3IwtNRZoi/": 635,
+      "https://www.instagram.com/reel/Dc3EfT-Rl_h/": 604,
+      "https://www.instagram.com/reel/Dc3qDNWRNAd/": 642,
+      "https://www.instagram.com/reel/DdO0u3rxSRe/": 637,
+      "https://www.instagram.com/reel/DdYW5JORpdu/": 615,
+      "https://www.instagram.com/reel/Dd3gahSxIqd/": 617,
+      "https://www.instagram.com/reel/Dd3iPYnxGU-/": 637,
+      "https://www.instagram.com/reel/Dd3jWlFxfzY/": 625
     }
   },
   "counts": {
     "views": {
-      "https://www.instagram.com/reel/Dc0U9eCRyq4/": 4,
-      "https://www.instagram.com/reel/Dc0Qg8WxenI/": 4,
-      "https://www.instagram.com/reel/Dc3IwtNRZoi/": 2,
-      "https://www.instagram.com/reel/Dc3EfT-Rl_h/": 3,
-      "https://www.instagram.com/reel/Dc3qDNWRNAd/": 2,
-      "https://www.instagram.com/reel/DdO0u3rxSRe/": 2,
-      "https://www.instagram.com/reel/DdYW5JORpdu/": 3,
-      "https://www.instagram.com/reel/Dd3gahSxIqd/": 2,
-      "https://www.instagram.com/reel/Dd3iPYnxGU-/": 6,
-      "https://www.instagram.com/reel/Dd3jWlFxfzY/": 1
-    },
-    "likes": {
-      "https://www.instagram.com/reel/Dc0U9eCRyq4/": 1,
+      "https://www.instagram.com/reel/Dc0U9eCRyq4/": 0,
       "https://www.instagram.com/reel/Dc0Qg8WxenI/": 0,
       "https://www.instagram.com/reel/Dc3IwtNRZoi/": 0,
-      "https://www.instagram.com/reel/Dc3EfT-Rl_h/": 1,
-      "https://www.instagram.com/reel/Dc3qDNWRNAd/": 1,
-      "https://www.instagram.com/reel/DdO0u3rxSRe/": 3,
+      "https://www.instagram.com/reel/Dc3EfT-Rl_h/": 0,
+      "https://www.instagram.com/reel/Dc3qDNWRNAd/": 0,
+      "https://www.instagram.com/reel/DdO0u3rxSRe/": 0,
       "https://www.instagram.com/reel/DdYW5JORpdu/": 0,
       "https://www.instagram.com/reel/Dd3gahSxIqd/": 0,
-      "https://www.instagram.com/reel/Dd3iPYnxGU-/": 1,
+      "https://www.instagram.com/reel/Dd3iPYnxGU-/": 0,
+      "https://www.instagram.com/reel/Dd3jWlFxfzY/": 0
+    },
+    "likes": {
+      "https://www.instagram.com/reel/Dc0U9eCRyq4/": 0,
+      "https://www.instagram.com/reel/Dc0Qg8WxenI/": 0,
+      "https://www.instagram.com/reel/Dc3IwtNRZoi/": 0,
+      "https://www.instagram.com/reel/Dc3EfT-Rl_h/": 0,
+      "https://www.instagram.com/reel/Dc3qDNWRNAd/": 0,
+      "https://www.instagram.com/reel/DdO0u3rxSRe/": 0,
+      "https://www.instagram.com/reel/DdYW5JORpdu/": 0,
+      "https://www.instagram.com/reel/Dd3gahSxIqd/": 1,
+      "https://www.instagram.com/reel/Dd3iPYnxGU-/": 0,
       "https://www.instagram.com/reel/Dd3jWlFxfzY/": 0
     }
   },
