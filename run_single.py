@@ -184,7 +184,8 @@ if __name__ == "__main__":
     if task_type == "views":
         reel, mode, rem, tgt = state.get_eligible_reel_for_views()
         if reel:
-            success, _, _ = submit_link("https://zefame.com/en/free-instagram-views", reel)
+            url = getattr(config, "VIEWS_URL", "https://zefame.com/en/free-instagram-views")
+            success, _, _ = submit_link(url, reel)
             if success:
                 state.record_view_success(reel)
         else:
@@ -192,10 +193,12 @@ if __name__ == "__main__":
     elif task_type == "likes":
         reel, rem, tgt = state.get_eligible_reel_for_likes()
         if reel:
-            success, _, _ = submit_link("https://zefame.com/en/free-instagram-likes", reel)
+            url = getattr(config, "LIKES_URL", "https://zefame.com/en/free-instagram-likes")
+            success, _, _ = submit_link(url, reel)
             if success:
                 state.record_like_success(reel)
         else:
-            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Likes skipped: All reels completed likes.", flush=True)
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Likes skipped: No eligible reel.", flush=True)
     elif task_type == "followers":
-        submit_link("https://zefame.com/en/free-instagram-followers", PROFILE_LINK)
+        url = getattr(config, "FOLLOWERS_URL", "https://zefame.com/en/free-instagram-followers")
+        submit_link(url, PROFILE_LINK)

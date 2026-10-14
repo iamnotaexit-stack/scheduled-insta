@@ -1,12 +1,4 @@
 {
-  "targets": {
-    "views": {
-      "https://www.instagram.com/reel/Ded8tYZhXTn/": 425
-    },
-    "likes": {
-      "https://www.instagram.com/reel/Ded8tYZhXTn/": 625
-    }
-  },
   "counts": {
     "views": {
       "https://www.instagram.com/reel/Ded8tYZhXTn/": 0
@@ -14,11 +6,5 @@
     "likes": {
       "https://www.instagram.com/reel/Ded8tYZhXTn/": 0
     }
-  },
-  "hinder_mode": {
-    "active": false,
-    "current_date": "",
-    "daily_target": 0,
-    "today_views_count": 0
   }
 }

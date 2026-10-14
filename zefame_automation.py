@@ -241,7 +241,7 @@ async def submit_link(url, link):
         return await asyncio.to_thread(submit_link_sync, url, link)
 
 async def views_task():
-    url = "https://zefame.com/en/free-instagram-views"
+    url = getattr(config, "VIEWS_URL", "https://zefame.com/en/free-instagram-views")
     log(f"Views task active: every {config.VIEWS_INTERVAL // 60} minutes.")
     while True:
         try:
@@ -250,39 +250,17 @@ async def views_task():
             except Exception:
                 pass
 
-            reel, mode, remaining, target = state.get_eligible_reel_for_views()
-
-            if mode == "VIEWS_CAP_REACHED_WAITING_LIKES":
-                log(f"Views: All reels reached view targets ({config.VIEW_CAP_RANGE[0]}-{config.VIEW_CAP_RANGE[1]}). Pausing views until like targets complete.")
-                await asyncio.sleep(600)
-                continue
-
-            if mode == "HINDER_DAILY_LIMIT_REACHED":
-                log(f"Views: Daily hinder limit ({target} views/day) completed for today. Sleeping 1 hour.")
-                await asyncio.sleep(3600)
-                continue
-
-            if mode == "HINDER_ACTIVATED":
-                log(f"Hinder Mode Activated! All view and like caps finished. Daily target: {target} views.")
-
+            reel, mode, completed, _ = state.get_eligible_reel_for_views()
             if not reel:
-                await asyncio.sleep(300)
+                await asyncio.sleep(60)
                 continue
 
-            if mode in ("HINDER_RUN", "HINDER_ACTIVATED"):
-                log(f"Views (Hinder Mode): Submitting {reel}. Remaining today: {remaining}/{target}")
-            else:
-                log(f"Views (Normal): Submitting {reel}. Remaining for this reel: {remaining}/{target}")
-
+            log(f"Views: Submitting {reel} to {url} (Total views so far: {completed})")
             success, wait_time, msg = await submit_link(url, reel)
             if success:
                 state.record_view_success(reel)
-                if mode in ("HINDER_RUN", "HINDER_ACTIVATED"):
-                    sleep_sec = max(1800, int(86400 / max(1, target)))
-                    log(f"Views order placed in Hinder Mode. Next spaced run in {sleep_sec // 60} minutes.")
-                else:
-                    sleep_sec = config.VIEWS_INTERVAL
-                    log(f"Views order placed. Next attempt in {sleep_sec // 60} minutes.")
+                sleep_sec = config.VIEWS_INTERVAL
+                log(f"Views order placed. Next attempt in {sleep_sec // 60} minutes.")
             elif wait_time:
                 sleep_sec = wait_time
                 log(f"Views cooldown active. Retrying in {sleep_sec} seconds ({sleep_sec // 60}m {sleep_sec % 60}s).")
@@ -295,7 +273,7 @@ async def views_task():
             await asyncio.sleep(60)
 
 async def likes_task():
-    url = "https://zefame.com/en/free-instagram-likes"
+    url = getattr(config, "LIKES_URL", "https://zefame.com/en/free-instagram-likes")
     log(f"Likes task active: every {config.LIKES_INTERVAL // 60} minutes.")
     await asyncio.sleep(5)
     while True:
@@ -305,13 +283,12 @@ async def likes_task():
             except Exception:
                 pass
 
-            reel, remaining, target = state.get_eligible_reel_for_likes()
+            reel, completed, _ = state.get_eligible_reel_for_likes()
             if not reel:
-                log(f"Likes: All reels have completed like targets ({config.LIKE_CAP_RANGE[0]}-{config.LIKE_CAP_RANGE[1]}). Likes loop completed.")
-                await asyncio.sleep(3600)
+                await asyncio.sleep(60)
                 continue
 
-            log(f"Likes: Submitting {reel}. Remaining for this reel: {remaining}/{target}")
+            log(f"Likes: Submitting {reel} to {url} (Total likes so far: {completed})")
             success, wait_time, msg = await submit_link(url, reel)
             if success:
                 state.record_like_success(reel)
@@ -329,7 +306,7 @@ async def likes_task():
             await asyncio.sleep(60)
 
 async def followers_task():
-    url = "https://zefame.com/en/free-instagram-followers"
+    url = getattr(config, "FOLLOWERS_URL", "https://zefame.com/en/free-instagram-followers")
     interval = config.FOLLOWERS_INTERVAL
     h = interval // 3600
     m = (interval % 3600) // 60
@@ -342,6 +319,7 @@ async def followers_task():
                 importlib.reload(config)
             except Exception:
                 pass
+            log(f"Followers: Submitting {config.PROFILE_LINK} to {url}")
             success, wait_time, msg = await submit_link(url, config.PROFILE_LINK)
             if success:
                 sleep_sec = config.FOLLOWERS_INTERVAL
@@ -396,9 +374,9 @@ async def main():
     enforce_single_instance()
     log("==================================================")
     log("Zefame Multi-Service Automation Started")
-    log(f"Views: every {config.VIEWS_INTERVAL // 60} minutes (cap: {config.VIEW_CAP_RANGE[0]}-{config.VIEW_CAP_RANGE[1]} per reel)")
-    log(f"Likes: every {config.LIKES_INTERVAL // 60} minutes (cap: {config.LIKE_CAP_RANGE[0]}-{config.LIKE_CAP_RANGE[1]} per reel)")
-    log(f"Followers: every {config.FOLLOWERS_INTERVAL // 3600} hours {(config.FOLLOWERS_INTERVAL % 3600) // 60} minutes")
+    log(f"Views: every {config.VIEWS_INTERVAL // 60} minutes -> {getattr(config, 'VIEWS_URL', 'https://zefame.com/en/free-instagram-views')}")
+    log(f"Likes: every {config.LIKES_INTERVAL // 60} minutes -> {getattr(config, 'LIKES_URL', 'https://zefame.com/en/free-instagram-likes')}")
+    log(f"Followers: every {config.FOLLOWERS_INTERVAL // 3600} hours {(config.FOLLOWERS_INTERVAL % 3600) // 60} minutes -> {getattr(config, 'FOLLOWERS_URL', 'https://zefame.com/en/free-instagram-followers')}")
     log("--------------------------------------------------")
     for line in state.get_status_summary().splitlines():
         log(line)

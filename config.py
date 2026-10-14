@@ -5,12 +5,6 @@ REEL_WEIGHTS = {
     "https://www.instagram.com/reel/Ded8tYZhXTn/": 1,
 }
 
-# 72-hour priority focus window settings
-FOCUS_REELS = [
-    "https://www.instagram.com/reel/Ded8tYZhXTn/"
-]
-FOCUS_EXPIRY_TIMESTAMP = 1790936830
-
 REEL_LINKS = [
     link for link, weight in REEL_WEIGHTS.items() for _ in range(weight)
 ]
@@ -21,15 +15,12 @@ def get_random_reel():
 
 PROFILE_LINK = "https://www.instagram.com/contentkaro.live/"
 
-# Schedule intervals in seconds
+# Target endpoints on Zefame
+VIEWS_URL = "https://zefame.com/en/free-instagram-views"
+LIKES_URL = "https://zefame.com/en/free-instagram-likes"
+FOLLOWERS_URL = "https://zefame.com/en/free-instagram-followers"
+
+# Schedule intervals in seconds (runs continuously with no expiration date)
 VIEWS_INTERVAL = 7 * 60                  # 7 minutes
 LIKES_INTERVAL = 35 * 60                 # 35 minutes
 FOLLOWERS_INTERVAL = 24 * 3600           # 24 hours
-
-# Loop Limits per reel
-VIEW_CAP_RANGE = (400, 450)
-LIKE_CAP_RANGE = (600, 650)
-
-# Daily Hinder Mode settings (activated after all reels finish views and likes)
-HINDER_DAILY_VIEWS_RANGE = (10, 20)
-

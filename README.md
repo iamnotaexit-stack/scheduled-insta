@@ -1,19 +1,23 @@
 # Zefame Instagram Multi-Service Automation
 
 Automated service submission script for Zefame free tools:
-- **Instagram Views**: Submits random reel link every 7 minutes (site minimum 5 min).
-- **Instagram Likes**: Submits random reel link every 35 minutes (site minimum 30 min).
-- **Instagram Followers**: Submits profile link every 24 hours 3 minutes (site minimum 24 hours).
+- **Instagram Views**: Submits reel to `https://zefame.com/en/free-instagram-views` every 7 minutes.
+- **Instagram Likes**: Submits reel to `https://zefame.com/en/free-instagram-likes` every 35 minutes.
+- **Instagram Followers**: Submits profile to `https://zefame.com/en/free-instagram-followers` every 24 hours.
 
 ---
 
 ## Configuration (`config.py`)
 
-- **Reel Links**:
+- **Target Reel Link**:
   - `https://www.instagram.com/reel/Ded8tYZhXTn/`
-- **Profile Link**:
+- **Target Profile Link**:
   - `https://www.instagram.com/contentkaro.live/`
-- **Service Intervals**:
+- **Service Endpoints**:
+  - Views: `https://zefame.com/en/free-instagram-views`
+  - Likes: `https://zefame.com/en/free-instagram-likes`
+  - Followers: `https://zefame.com/en/free-instagram-followers`
+- **Schedule Intervals (Continuous, no expiration)**:
   - Views: 7 minutes (`420` seconds)
   - Likes: 35 minutes (`2100` seconds)
   - Followers: 24 hours (`86400` seconds)
