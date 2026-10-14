@@ -1,28 +1,12 @@
 {
-  "targets": {
-    "views": {
-      "https://www.instagram.com/reel/Ded8tYZhXTn/": 440,
-      "https://www.instagram.com/reel/DeeGx1AOVwv/": 412
-    },
-    "likes": {
-      "https://www.instagram.com/reel/Ded8tYZhXTn/": 613,
-      "https://www.instagram.com/reel/DeeGx1AOVwv/": 600
-    }
-  },
   "counts": {
     "views": {
       "https://www.instagram.com/reel/Ded8tYZhXTn/": 8,
-      "https://www.instagram.com/reel/DeeGx1AOVwv/": 12
+      "https://www.instagram.com/reel/DeeGx1AOVwv/": 13
     },
     "likes": {
       "https://www.instagram.com/reel/Ded8tYZhXTn/": 0,
       "https://www.instagram.com/reel/DeeGx1AOVwv/": 4
     }
-  },
-  "hinder_mode": {
-    "active": false,
-    "current_date": "",
-    "daily_target": 0,
-    "today_views_count": 0
   }
 }
