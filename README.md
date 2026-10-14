@@ -9,8 +9,9 @@ Automated service submission script for Zefame free tools:
 
 ## Configuration (`config.py`)
 
-- **Target Reel Link**:
+- **Target Reel Links**:
   - `https://www.instagram.com/reel/Ded8tYZhXTn/`
+  - `https://www.instagram.com/reel/DeeGx1AOVwv/`
 - **Target Profile Link**:
   - `https://www.instagram.com/contentkaro.live/`
 - **Service Endpoints**:
