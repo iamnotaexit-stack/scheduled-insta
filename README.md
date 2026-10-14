@@ -13,11 +13,11 @@ Automated service submission script for Zefame free tools:
   - `https://www.instagram.com/reel/Dc0U9eCRyq4/`
   - `https://www.instagram.com/reel/Dc0Qg8WxenI/`
 - **Profile Link**:
-  - `https://www.instagram.com/fluxiolive/`
+  - `https://www.instagram.com/contentkaro.live/`
 - **Service Intervals**:
   - Views: 7 minutes (`420` seconds)
   - Likes: 35 minutes (`2100` seconds)
-  - Followers: 24 hours 3 minutes (`86580` seconds)
+  - Followers: 24 hours (`86400` seconds)
 
 ---
 

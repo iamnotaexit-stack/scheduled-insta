@@ -30,12 +30,12 @@ def get_random_reel():
     import random
     return random.choice(REEL_LINKS)
 
-PROFILE_LINK = "https://www.instagram.com/fluxiolive/"
+PROFILE_LINK = "https://www.instagram.com/contentkaro.live/"
 
 # Schedule intervals in seconds
 VIEWS_INTERVAL = 7 * 60                  # 7 minutes
 LIKES_INTERVAL = 35 * 60                 # 35 minutes
-FOLLOWERS_INTERVAL = 24 * 3600 + 3 * 60  # 24 hours 3 minutes
+FOLLOWERS_INTERVAL = 24 * 3600           # 24 hours
 
 # Loop Limits per reel
 VIEW_CAP_RANGE = (400, 450)

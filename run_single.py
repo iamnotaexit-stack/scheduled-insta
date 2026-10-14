@@ -32,7 +32,12 @@ class SafeChrome(uc.Chrome):
             pass
 
 def clean_url(url_string):
-    clean = url_string.split('?')[0]
+    clean = url_string.strip()
+    if clean.startswith('@'):
+        clean = clean[1:]
+    if not clean.startswith('http://') and not clean.startswith('https://'):
+        clean = f"https://www.instagram.com/{clean}"
+    clean = clean.split('?')[0].split('#')[0]
     if not clean.endswith('/'):
         clean += '/'
     return clean

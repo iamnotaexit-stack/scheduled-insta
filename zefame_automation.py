@@ -93,7 +93,12 @@ class SafeChrome(uc.Chrome):
             pass
 
 def clean_url(url_string):
-    clean = url_string.split('?')[0]
+    clean = url_string.strip()
+    if clean.startswith('@'):
+        clean = clean[1:]
+    if not clean.startswith('http://') and not clean.startswith('https://'):
+        clean = f"https://www.instagram.com/{clean}"
+    clean = clean.split('?')[0].split('#')[0]
     if not clean.endswith('/'):
         clean += '/'
     return clean
@@ -328,7 +333,8 @@ async def followers_task():
     interval = config.FOLLOWERS_INTERVAL
     h = interval // 3600
     m = (interval % 3600) // 60
-    log(f"Followers task active: every {h} hours {m} minutes.")
+    interval_str = f"{h} hours" if m == 0 else f"{h} hours {m} minutes"
+    log(f"Followers task active: every {interval_str}.")
     await asyncio.sleep(10)
     while True:
         try:
@@ -339,7 +345,7 @@ async def followers_task():
             success, wait_time, msg = await submit_link(url, config.PROFILE_LINK)
             if success:
                 sleep_sec = config.FOLLOWERS_INTERVAL
-                log(f"Followers order placed. Next attempt in {h} hours {m} minutes.")
+                log(f"Followers order placed. Next attempt in {interval_str}.")
             elif wait_time:
                 sleep_sec = wait_time
                 qh = sleep_sec // 3600
