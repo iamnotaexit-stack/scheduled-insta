@@ -88,12 +88,43 @@ def _git_sync_worker():
     except Exception as e:
         print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] [Git Sync] Exception: {e}", flush=True)
 
+def is_reel_views_blocked(reel, data):
+    v = data["counts"]["views"].get(reel, 0)
+    l = data["counts"]["likes"].get(reel, 0)
+    max_sync = getattr(config, "SYNC_MAX_CYCLES", 120)
+    interval = getattr(config, "SYNC_VIEW_INTERVAL", 20)
+    likes_per = getattr(config, "SYNC_LIKES_PER_INTERVAL", 4)
+
+    if v > max_sync:
+        return False, 0
+    if v >= interval:
+        required_likes = (min(v, max_sync) // interval) * likes_per
+        if l < required_likes:
+            return True, required_likes
+    return False, 0
+
 def get_eligible_reel_for_views():
     data = load_state()
     reels = list(config.REEL_WEIGHTS.keys())
     if not reels:
         return None, "NO_REELS", 0, 0
-    weighted = [r for r in reels for _ in range(config.REEL_WEIGHTS.get(r, 1))]
+
+    eligible = []
+    blocked_info = []
+    for r in reels:
+        blocked, req_likes = is_reel_views_blocked(r, data)
+        if blocked:
+            v = data["counts"]["views"].get(r, 0)
+            l = data["counts"]["likes"].get(r, 0)
+            blocked_info.append(f"{r} (views: {v}, likes: {l}/{req_likes})")
+        else:
+            eligible.append(r)
+
+    if not eligible:
+        msg = "PAUSED_WAITING_LIKES: " + "; ".join(blocked_info)
+        return None, msg, 0, 0
+
+    weighted = [r for r in eligible for _ in range(config.REEL_WEIGHTS.get(r, 1))]
     reel = random.choice(weighted)
     cur = data["counts"]["views"].get(reel, 0)
     return reel, "ALWAYS_RUN", cur, 0
@@ -108,6 +139,36 @@ def get_eligible_reel_for_likes():
     reels = list(config.REEL_WEIGHTS.keys())
     if not reels:
         return None, 0, 0
+
+    # Priority 1: Reels that are currently blocking views because they need likes
+    blocked_reels = []
+    for r in reels:
+        blocked, _ = is_reel_views_blocked(r, data)
+        if blocked:
+            blocked_reels.append(r)
+    if blocked_reels:
+        reel = random.choice(blocked_reels)
+        cur = data["counts"]["likes"].get(reel, 0)
+        return reel, cur, 0
+
+    # Priority 2: Reels in first 120 cycles that need likes for next 20-views milestone
+    max_sync = getattr(config, "SYNC_MAX_CYCLES", 120)
+    interval = getattr(config, "SYNC_VIEW_INTERVAL", 20)
+    likes_per = getattr(config, "SYNC_LIKES_PER_INTERVAL", 4)
+    lagging_reels = []
+    for r in reels:
+        v = data["counts"]["views"].get(r, 0)
+        l = data["counts"]["likes"].get(r, 0)
+        if v <= max_sync:
+            next_target = ((v // interval) + 1) * likes_per
+            if l < next_target:
+                lagging_reels.append(r)
+    if lagging_reels:
+        reel = random.choice(lagging_reels)
+        cur = data["counts"]["likes"].get(reel, 0)
+        return reel, cur, 0
+
+    # Priority 3: Normal weighted choice
     weighted = [r for r in reels for _ in range(config.REEL_WEIGHTS.get(r, 1))]
     reel = random.choice(weighted)
     cur = data["counts"]["likes"].get(reel, 0)
@@ -122,10 +183,20 @@ def get_status_summary():
     data = load_state()
     reels = list(config.REEL_WEIGHTS.keys())
     lines = []
-    lines.append("Mode: CONTINUOUS (Always active, no expiration)")
+    lines.append("Mode: CONTINUOUS (Views-to-likes sync active for first 120 view cycles)")
     lines.append("Reels Status:")
     for r in reels:
         v_cur = data["counts"]["views"].get(r, 0)
         l_cur = data["counts"]["likes"].get(r, 0)
-        lines.append(f"  {r}: Views [{v_cur}], Likes [{l_cur}]")
+        blocked, req_likes = is_reel_views_blocked(r, data)
+        if v_cur <= 120:
+            if blocked:
+                status_str = f"Views PAUSED at {v_cur} (needs {req_likes} likes, currently {l_cur}/{req_likes})"
+            else:
+                next_check = ((v_cur // 20) + 1) * 20
+                next_req = (next_check // 20) * 4
+                status_str = f"Views ACTIVE ({v_cur}/120 milestone, next check at {next_check} views needs {next_req} likes)"
+        else:
+            status_str = "Views UNRESTRICTED (>120 cycles complete)"
+        lines.append(f"  {r}: Views [{v_cur}], Likes [{l_cur}] : {status_str}")
     return "\n".join(lines)

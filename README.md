@@ -21,6 +21,10 @@ Automated service submission script for Zefame free tools:
   - Views: 7 minutes (`420` seconds)
   - Likes: 35 minutes (`2100` seconds)
   - Followers: 24 hours (`86400` seconds)
+- **Views to Likes Synchronization**:
+  - Every 20 view cycles requires 4 like cycles.
+  - If required likes are incomplete, views cycle pauses for that reel until likes finish.
+  - Active for the first 120 cycles; afterwards views runs continuously.
 
 ---
 

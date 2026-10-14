@@ -235,6 +235,10 @@ def submit_link_sync(url, link):
                 pass
 
 browser_lock = asyncio.Lock()
+likes_wake_event = asyncio.Event()
+
+def wake_likes_task():
+    likes_wake_event.set()
 
 async def submit_link(url, link):
     async with browser_lock:
@@ -252,6 +256,11 @@ async def views_task():
 
             reel, mode, completed, _ = state.get_eligible_reel_for_views()
             if not reel:
+                if "PAUSED_WAITING_LIKES" in mode:
+                    log(f"Views: {mode}. Pausing views and running likes cycle.")
+                    wake_likes_task()
+                    await asyncio.sleep(30)
+                    continue
                 await asyncio.sleep(60)
                 continue
 
@@ -276,6 +285,7 @@ async def likes_task():
     url = getattr(config, "LIKES_URL", "https://zefame.com/en/free-instagram-likes")
     log(f"Likes task active: every {config.LIKES_INTERVAL // 60} minutes.")
     await asyncio.sleep(5)
+    like_cooldown_until = 0
     while True:
         try:
             try:
@@ -288,19 +298,38 @@ async def likes_task():
                 await asyncio.sleep(60)
                 continue
 
+            now = time.time()
+            if now < like_cooldown_until:
+                remaining_cd = int(like_cooldown_until - now)
+                try:
+                    await asyncio.wait_for(likes_wake_event.wait(), timeout=remaining_cd)
+                except asyncio.TimeoutError:
+                    pass
+                likes_wake_event.clear()
+                continue
+
             log(f"Likes: Submitting {reel} to {url} (Total likes so far: {completed})")
             success, wait_time, msg = await submit_link(url, reel)
             if success:
                 state.record_like_success(reel)
                 sleep_sec = config.LIKES_INTERVAL
+                like_cooldown_until = time.time() + sleep_sec
                 log(f"Likes order placed. Next attempt in {sleep_sec // 60} minutes.")
             elif wait_time:
                 sleep_sec = wait_time
+                like_cooldown_until = time.time() + sleep_sec
                 log(f"Likes cooldown active. Retrying in {sleep_sec} seconds ({sleep_sec // 60}m {sleep_sec % 60}s).")
             else:
                 sleep_sec = 180
+                like_cooldown_until = time.time() + sleep_sec
                 log(f"Likes encountered an issue ({msg}). Retrying in {sleep_sec} seconds.")
-            await asyncio.sleep(sleep_sec)
+
+            try:
+                await asyncio.wait_for(likes_wake_event.wait(), timeout=sleep_sec)
+                log("Likes task awakened early to fulfill views dependency.")
+            except asyncio.TimeoutError:
+                pass
+            likes_wake_event.clear()
         except Exception as e:
             log(f"Likes task unexpected error: {e}. Retrying in 60 seconds.")
             await asyncio.sleep(60)
