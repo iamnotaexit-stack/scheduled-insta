@@ -10,8 +10,7 @@ Automated service submission script for Zefame free tools:
 ## Configuration (`config.py`)
 
 - **Reel Links**:
-  - `https://www.instagram.com/reel/Dc0U9eCRyq4/`
-  - `https://www.instagram.com/reel/Dc0Qg8WxenI/`
+  - `https://www.instagram.com/reel/Ded8tYZhXTn/`
 - **Profile Link**:
   - `https://www.instagram.com/contentkaro.live/`
 - **Service Intervals**:

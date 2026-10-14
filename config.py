@@ -2,25 +2,14 @@
 # Clean reel URLs without tracking parameters to prevent Zefame "Order error"
 
 REEL_WEIGHTS = {
-    "https://www.instagram.com/reel/Dc0U9eCRyq4/": 1,
-    "https://www.instagram.com/reel/Dc0Qg8WxenI/": 1,
-    "https://www.instagram.com/reel/Dc3IwtNRZoi/": 1,
-    "https://www.instagram.com/reel/Dc3EfT-Rl_h/": 1,
-    "https://www.instagram.com/reel/Dc3qDNWRNAd/": 1,
-    "https://www.instagram.com/reel/DdO0u3rxSRe/": 1,
-    "https://www.instagram.com/reel/DdYW5JORpdu/": 1,
-    "https://www.instagram.com/reel/Dd3gahSxIqd/": 1,
-    "https://www.instagram.com/reel/Dd3iPYnxGU-/": 1,
-    "https://www.instagram.com/reel/Dd3jWlFxfzY/": 1,
+    "https://www.instagram.com/reel/Ded8tYZhXTn/": 1,
 }
 
 # 72-hour priority focus window settings
 FOCUS_REELS = [
-    "https://www.instagram.com/reel/Dd3gahSxIqd/",
-    "https://www.instagram.com/reel/Dd3iPYnxGU-/",
-    "https://www.instagram.com/reel/Dd3jWlFxfzY/"
+    "https://www.instagram.com/reel/Ded8tYZhXTn/"
 ]
-FOCUS_EXPIRY_TIMESTAMP = 1790936830  # Active until 2026-10-02 15:57:10 IST
+FOCUS_EXPIRY_TIMESTAMP = 1790936830
 
 REEL_LINKS = [
     link for link, weight in REEL_WEIGHTS.items() for _ in range(weight)
