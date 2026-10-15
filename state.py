@@ -124,7 +124,11 @@ def get_eligible_reel_for_views():
         msg = "PAUSED_WAITING_LIKES: " + "; ".join(blocked_info)
         return None, msg, 0, 0
 
-    weighted = [r for r in eligible for _ in range(config.REEL_WEIGHTS.get(r, 1))]
+    # Prioritize reels with the lowest view count to keep all reels balanced
+    min_views = min(data["counts"]["views"].get(r, 0) for r in eligible)
+    lowest_reels = [r for r in eligible if data["counts"]["views"].get(r, 0) == min_views]
+
+    weighted = [r for r in lowest_reels for _ in range(config.REEL_WEIGHTS.get(r, 1))]
     reel = random.choice(weighted)
     cur = data["counts"]["views"].get(reel, 0)
     return reel, "ALWAYS_RUN", cur, 0
@@ -147,7 +151,9 @@ def get_eligible_reel_for_likes():
         if blocked:
             blocked_reels.append(r)
     if blocked_reels:
-        reel = random.choice(blocked_reels)
+        min_likes = min(data["counts"]["likes"].get(r, 0) for r in blocked_reels)
+        candidates = [r for r in blocked_reels if data["counts"]["likes"].get(r, 0) == min_likes]
+        reel = random.choice(candidates)
         cur = data["counts"]["likes"].get(reel, 0)
         return reel, cur, 0
 
@@ -164,12 +170,16 @@ def get_eligible_reel_for_likes():
             if l < next_target:
                 lagging_reels.append(r)
     if lagging_reels:
-        reel = random.choice(lagging_reels)
+        min_likes = min(data["counts"]["likes"].get(r, 0) for r in lagging_reels)
+        candidates = [r for r in lagging_reels if data["counts"]["likes"].get(r, 0) == min_likes]
+        reel = random.choice(candidates)
         cur = data["counts"]["likes"].get(reel, 0)
         return reel, cur, 0
 
-    # Priority 3: Normal weighted choice
-    weighted = [r for r in reels for _ in range(config.REEL_WEIGHTS.get(r, 1))]
+    # Priority 3: Lowest likes count first among all reels
+    min_likes = min(data["counts"]["likes"].get(r, 0) for r in reels)
+    lowest_reels = [r for r in reels if data["counts"]["likes"].get(r, 0) == min_likes]
+    weighted = [r for r in lowest_reels for _ in range(config.REEL_WEIGHTS.get(r, 1))]
     reel = random.choice(weighted)
     cur = data["counts"]["likes"].get(reel, 0)
     return reel, cur, 0
