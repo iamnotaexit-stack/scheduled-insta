@@ -12,6 +12,7 @@ Automated service submission script for Zefame free tools:
 - **Target Reel Links**:
   - `https://www.instagram.com/reel/Ded8tYZhXTn/`
   - `https://www.instagram.com/reel/DeeGx1AOVwv/`
+  - `https://www.instagram.com/reel/Def13uIAqoU/`
 - **Target Profile Link**:
   - `https://www.instagram.com/contentkaro.live/`
 - **Service Endpoints**:
