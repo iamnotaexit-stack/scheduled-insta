@@ -18,6 +18,7 @@ def _default_state():
             "likes": {},
             "followers": {}
         },
+        "daily_view_dates": {},
         "last_followers_run": ""
     }
 
@@ -32,6 +33,7 @@ def load_state():
                         data["counts"]["views"].update(loaded.get("counts", {}).get("views", {}))
                         data["counts"]["likes"].update(loaded.get("counts", {}).get("likes", {}))
                         data["counts"]["followers"].update(loaded.get("counts", {}).get("followers", {}))
+                        data["daily_view_dates"] = loaded.get("daily_view_dates", {})
                         data["last_followers_run"] = loaded.get("last_followers_run", "")
             except Exception:
                 pass
@@ -98,6 +100,20 @@ def _git_sync_worker():
     except Exception as e:
         print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] [Git Sync] Exception: {e}", flush=True)
 
+def is_reel_daily_view_limit_reached(reel, data):
+    daily_reels = getattr(config, "DAILY_LIMITED_VIEW_REELS", [])
+    if reel not in daily_reels:
+        return False
+    today = time.strftime('%Y-%m-%d', time.gmtime())
+    entry = data.get("daily_view_dates", {}).get(reel)
+    if not entry:
+        return False
+    if isinstance(entry, str):
+        return entry == today
+    if isinstance(entry, dict):
+        return entry.get("date") == today and entry.get("count", 0) >= getattr(config, "DAILY_VIEW_LIMIT", 1)
+    return False
+
 def is_reel_views_blocked(reel, data):
     v = data["counts"]["views"].get(reel, 0)
     l = data["counts"]["likes"].get(reel, 0)
@@ -121,7 +137,13 @@ def get_eligible_reel_for_views():
 
     eligible = []
     blocked_info = []
+    daily_limited_info = []
     for r in reels:
+        if is_reel_daily_view_limit_reached(r, data):
+            v = data["counts"]["views"].get(r, 0)
+            daily_limited_info.append(f"{r} (daily limit reached today, total: {v})")
+            continue
+
         blocked, req_likes = is_reel_views_blocked(r, data)
         if blocked:
             v = data["counts"]["views"].get(r, 0)
@@ -131,7 +153,12 @@ def get_eligible_reel_for_views():
             eligible.append(r)
 
     if not eligible:
-        msg = "PAUSED_WAITING_LIKES: " + "; ".join(blocked_info)
+        if blocked_info:
+            msg = "PAUSED_WAITING_LIKES: " + "; ".join(blocked_info)
+        elif daily_limited_info:
+            msg = "DAILY_LIMIT_WAIT: " + "; ".join(daily_limited_info)
+        else:
+            msg = "NO_ELIGIBLE_REELS"
         return None, msg, 0, 0
 
     # Prioritize reels with the lowest view count to keep all reels balanced
@@ -146,6 +173,16 @@ def get_eligible_reel_for_views():
 def record_view_success(reel):
     data = load_state()
     data["counts"]["views"][reel] = data["counts"]["views"].get(reel, 0) + 1
+    daily_reels = getattr(config, "DAILY_LIMITED_VIEW_REELS", [])
+    if reel in daily_reels:
+        today = time.strftime('%Y-%m-%d', time.gmtime())
+        if "daily_view_dates" not in data:
+            data["daily_view_dates"] = {}
+        entry = data["daily_view_dates"].get(reel)
+        if isinstance(entry, dict) and entry.get("date") == today:
+            entry["count"] = entry.get("count", 0) + 1
+        else:
+            data["daily_view_dates"][reel] = today
     save_state(data)
 
 def get_eligible_reel_for_likes():
@@ -210,6 +247,8 @@ def record_follower_success(profile_link):
 def get_status_summary():
     data = load_state()
     reels = list(config.REEL_WEIGHTS.keys())
+    daily_reels = getattr(config, "DAILY_LIMITED_VIEW_REELS", [])
+    today = time.strftime('%Y-%m-%d', time.gmtime())
     lines = []
     lines.append("Mode: CONTINUOUS (Views-to-likes sync active for first 120 view cycles)")
     lines.append("Reels Status:")
@@ -217,15 +256,21 @@ def get_status_summary():
         v_cur = data["counts"]["views"].get(r, 0)
         l_cur = data["counts"]["likes"].get(r, 0)
         blocked, req_likes = is_reel_views_blocked(r, data)
-        if v_cur <= 120:
+        daily_done = is_reel_daily_view_limit_reached(r, data)
+
+        if daily_done:
+            status_str = f"Views CAPPED for today ({today}, 1/1 daily cycle complete). Likes unrestricted."
+        elif v_cur <= 120:
             if blocked:
                 status_str = f"Views PAUSED at {v_cur} (needs {req_likes} likes, currently {l_cur}/{req_likes})"
             else:
                 next_check = ((v_cur // 20) + 1) * 20
                 next_req = (next_check // 20) * 4
-                status_str = f"Views ACTIVE ({v_cur}/120 milestone, next check at {next_check} views needs {next_req} likes)"
+                limit_note = " [Daily cap: 1 view/day]" if r in daily_reels else ""
+                status_str = f"Views ACTIVE ({v_cur}/120 milestone, next check at {next_check} views needs {next_req} likes){limit_note}"
         else:
-            status_str = "Views UNRESTRICTED (>120 cycles complete)"
+            limit_note = " [Daily cap: 1 view/day]" if r in daily_reels else ""
+            status_str = f"Views UNRESTRICTED (>120 cycles complete){limit_note}"
         lines.append(f"  {r}: Views [{v_cur}], Likes [{l_cur}] : {status_str}")
 
     profile = getattr(config, "PROFILE_LINK", "")

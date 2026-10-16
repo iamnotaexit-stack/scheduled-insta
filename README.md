@@ -28,6 +28,9 @@ Automated service submission script for Zefame free tools:
   - Every 20 view cycles requires 4 like cycles.
   - If required likes are incomplete, views cycle pauses for that reel until likes finish.
   - Active for the first 120 cycles; afterwards views runs continuously.
+- **Daily View Limit**:
+  - First two reels (`Ded8tYZhXTn` and `DeeGx1AOVwv`) are limited to 1 view cycle per whole day.
+  - Like cycles for all reels remain completely unrestricted.
 
 ---
 

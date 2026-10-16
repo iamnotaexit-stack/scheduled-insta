@@ -33,3 +33,10 @@ FOLLOWERS_INTERVAL = 24 * 3600           # 24 hours
 SYNC_VIEW_INTERVAL = 20
 SYNC_LIKES_PER_INTERVAL = 4
 SYNC_MAX_CYCLES = 120
+
+# Daily restricted reels: limited to 1 view cycle per whole day, likes unrestricted
+DAILY_LIMITED_VIEW_REELS = [
+    "https://www.instagram.com/reel/Ded8tYZhXTn/",
+    "https://www.instagram.com/reel/DeeGx1AOVwv/",
+]
+DAILY_VIEW_LIMIT = 1
