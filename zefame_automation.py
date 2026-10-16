@@ -351,8 +351,9 @@ async def followers_task():
             log(f"Followers: Submitting {config.PROFILE_LINK} to {url}")
             success, wait_time, msg = await submit_link(url, config.PROFILE_LINK)
             if success:
+                state.record_follower_success(config.PROFILE_LINK)
                 sleep_sec = config.FOLLOWERS_INTERVAL
-                log(f"Followers order placed. Next attempt in {interval_str}.")
+                log(f"Followers order placed successfully! Next attempt in {interval_str}.")
             elif wait_time:
                 sleep_sec = wait_time
                 qh = sleep_sec // 3600

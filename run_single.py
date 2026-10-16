@@ -201,4 +201,6 @@ if __name__ == "__main__":
             print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Likes skipped: No eligible reel.", flush=True)
     elif task_type == "followers":
         url = getattr(config, "FOLLOWERS_URL", "https://zefame.com/en/free-instagram-followers")
-        submit_link(url, PROFILE_LINK)
+        success, wait_time, msg = submit_link(url, PROFILE_LINK)
+        if success:
+            state.record_follower_success(PROFILE_LINK)

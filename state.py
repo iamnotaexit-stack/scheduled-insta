@@ -15,8 +15,10 @@ def _default_state():
     return {
         "counts": {
             "views": {},
-            "likes": {}
-        }
+            "likes": {},
+            "followers": {}
+        },
+        "last_followers_run": ""
     }
 
 def load_state():
@@ -29,6 +31,8 @@ def load_state():
                     if isinstance(loaded, dict):
                         data["counts"]["views"].update(loaded.get("counts", {}).get("views", {}))
                         data["counts"]["likes"].update(loaded.get("counts", {}).get("likes", {}))
+                        data["counts"]["followers"].update(loaded.get("counts", {}).get("followers", {}))
+                        data["last_followers_run"] = loaded.get("last_followers_run", "")
             except Exception:
                 pass
 
@@ -42,6 +46,12 @@ def load_state():
             if r not in data["counts"]["likes"]:
                 data["counts"]["likes"][r] = 0
                 changed = True
+
+        # Initialize profile link for followers
+        profile = getattr(config, "PROFILE_LINK", "")
+        if profile and profile not in data["counts"]["followers"]:
+            data["counts"]["followers"][profile] = 0
+            changed = True
 
         if changed or not os.path.exists(STATE_FILE):
             _save_state_unlocked(data)
@@ -189,6 +199,14 @@ def record_like_success(reel):
     data["counts"]["likes"][reel] = data["counts"]["likes"].get(reel, 0) + 1
     save_state(data)
 
+def record_follower_success(profile_link):
+    data = load_state()
+    if "followers" not in data["counts"]:
+        data["counts"]["followers"] = {}
+    data["counts"]["followers"][profile_link] = data["counts"]["followers"].get(profile_link, 0) + 1
+    data["last_followers_run"] = time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())
+    save_state(data)
+
 def get_status_summary():
     data = load_state()
     reels = list(config.REEL_WEIGHTS.keys())
@@ -209,4 +227,9 @@ def get_status_summary():
         else:
             status_str = "Views UNRESTRICTED (>120 cycles complete)"
         lines.append(f"  {r}: Views [{v_cur}], Likes [{l_cur}] : {status_str}")
+
+    profile = getattr(config, "PROFILE_LINK", "")
+    f_cur = data["counts"].get("followers", {}).get(profile, 0)
+    last_f = data.get("last_followers_run", "Not yet recorded")
+    lines.append(f"Followers Status: {profile} : Submissions [{f_cur}], Last run: {last_f}")
     return "\n".join(lines)
