@@ -1,24 +1,21 @@
 {
   "counts": {
     "views": {
-      "https://www.instagram.com/reel/Ded8tYZhXTn/": 2,
-      "https://www.instagram.com/reel/DeeGx1AOVwv/": 2,
-      "https://www.instagram.com/reel/Def13uIAqoU/": 78,
-      "https://www.instagram.com/reel/Deidi1yjNiI/": 78
+      "https://www.instagram.com/reel/Ded8tYZhXTn/": 0,
+      "https://www.instagram.com/reel/DeeGx1AOVwv/": 0,
+      "https://www.instagram.com/reel/Def13uIAqoU/": 0,
+      "https://www.instagram.com/reel/Deidi1yjNiI/": 0
     },
     "likes": {
-      "https://www.instagram.com/reel/Ded8tYZhXTn/": 4,
-      "https://www.instagram.com/reel/DeeGx1AOVwv/": 4,
-      "https://www.instagram.com/reel/Def13uIAqoU/": 16,
-      "https://www.instagram.com/reel/Deidi1yjNiI/": 16
+      "https://www.instagram.com/reel/Ded8tYZhXTn/": 0,
+      "https://www.instagram.com/reel/DeeGx1AOVwv/": 0,
+      "https://www.instagram.com/reel/Def13uIAqoU/": 0,
+      "https://www.instagram.com/reel/Deidi1yjNiI/": 1
     },
     "followers": {
-      "https://www.instagram.com/contentkaro.live/": 1
+      "https://www.instagram.com/contentkaro.live/": 0
     }
   },
-  "daily_view_dates": {
-    "https://www.instagram.com/reel/DeeGx1AOVwv/": "2026-10-21",
-    "https://www.instagram.com/reel/Ded8tYZhXTn/": "2026-10-21"
-  },
-  "last_followers_run": "2026-10-20 07:58:43 UTC"
+  "daily_view_dates": {},
+  "last_followers_run": ""
 }
