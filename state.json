@@ -2,7 +2,7 @@
   "counts": {
     "views": {
       "https://www.instagram.com/reel/Ded8tYZhXTn/": 0,
-      "https://www.instagram.com/reel/DeeGx1AOVwv/": 0,
+      "https://www.instagram.com/reel/DeeGx1AOVwv/": 1,
       "https://www.instagram.com/reel/Def13uIAqoU/": 0,
       "https://www.instagram.com/reel/Deidi1yjNiI/": 0
     },
@@ -16,6 +16,8 @@
       "https://www.instagram.com/contentkaro.live/": 0
     }
   },
-  "daily_view_dates": {},
+  "daily_view_dates": {
+    "https://www.instagram.com/reel/DeeGx1AOVwv/": "2026-10-24"
+  },
   "last_followers_run": ""
 }
