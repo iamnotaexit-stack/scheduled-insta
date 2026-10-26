@@ -1,24 +1,21 @@
 {
   "counts": {
     "views": {
-      "https://www.instagram.com/reel/Ded8tYZhXTn/": 1,
-      "https://www.instagram.com/reel/DeeGx1AOVwv/": 1,
-      "https://www.instagram.com/reel/Def13uIAqoU/": 14,
-      "https://www.instagram.com/reel/Deidi1yjNiI/": 13
+      "https://www.instagram.com/reel/Ded8tYZhXTn/": 0,
+      "https://www.instagram.com/reel/DeeGx1AOVwv/": 0,
+      "https://www.instagram.com/reel/Def13uIAqoU/": 1,
+      "https://www.instagram.com/reel/Deidi1yjNiI/": 0
     },
     "likes": {
-      "https://www.instagram.com/reel/Ded8tYZhXTn/": 1,
-      "https://www.instagram.com/reel/DeeGx1AOVwv/": 2,
-      "https://www.instagram.com/reel/Def13uIAqoU/": 1,
-      "https://www.instagram.com/reel/Deidi1yjNiI/": 2
+      "https://www.instagram.com/reel/Ded8tYZhXTn/": 0,
+      "https://www.instagram.com/reel/DeeGx1AOVwv/": 0,
+      "https://www.instagram.com/reel/Def13uIAqoU/": 0,
+      "https://www.instagram.com/reel/Deidi1yjNiI/": 0
     },
     "followers": {
       "https://www.instagram.com/contentkaro.live/": 0
     }
   },
-  "daily_view_dates": {
-    "https://www.instagram.com/reel/Ded8tYZhXTn/": "2026-10-26",
-    "https://www.instagram.com/reel/DeeGx1AOVwv/": "2026-10-26"
-  },
+  "daily_view_dates": {},
   "last_followers_run": ""
 }
